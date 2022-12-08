@@ -1,0 +1,7 @@
+Stadie:
+Varenummer:
+Masse:
+Kategori:
+Enheder:
+Materiale:
+Farver:
