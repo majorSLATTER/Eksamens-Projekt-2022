@@ -76,15 +76,8 @@ def main():
         r.draw(win)
         InfoText.close()
     
-    # Den kasser med entries
-    def InsertBoks():
-        InsertY = 473
-        for x in range(5):
-            x = Entry(Point(850, InsertY), 30)
-            x.setFill("#D9D9D9")
-            x.setSize(27)
-            x.draw(win)
-            InsertY += 86
+    # De kasser med entries
+    InsertY = 473
     
     # Funktion til at tjekke om der er trykket inde i en rektangel
     def inside(point, rect):
@@ -97,46 +90,100 @@ def main():
         r = Rectangle(Point(x-22, y-22), Point(x+21, y+21)).draw(win)
         Line(Point(x+18, y), Point(x-19, y)).draw(win)
         Line(Point(x, y+18), Point(x, y-19)).draw(win)
-        
+
+    o = open("Data.txt", "r")
+    PreBuildInfo = o.read().split(";")
+    o.close()
+
+    y=0
+    Stadie = Entry(Point(850, InsertY), 30)
+    Varenummer = Entry(Point(850, InsertY + 86), 30)
+    Masse = Entry(Point(850, InsertY + 86*2), 30)
+    Kategori = Entry(Point(850, InsertY+ 86*3), 30)
+    Enheder = Entry(Point(850, InsertY+ 86*4), 30)
+    SamletInfo = [Stadie, Varenummer, Masse, Kategori, Enheder]
+    for x in SamletInfo:
+        y += 1
+        x.setText(PreBuildInfo[y])
+        x.setFill("#D9D9D9")
+        x.setSize(27)
+        x.draw(win)
+
+
+    ProduktNavn = Entry(Point(650, 150), 30)
+    ProduktNavn.setText(PreBuildInfo[0])
+    ProduktNavn.setFill("#E4E4E4")
+    ProduktNavn.setSize(36)
+    ProduktNavn.draw(win)
+
+    MatBoks1 = Entry(Point(610, 903), 6)
+    MatBoks1.setFill("#D9D9D9")
+    MatBoks1.setSize(27)
+    MatBoks1.draw(win)
+    MatBoks2 = Entry(Point(740, 903), 6)
+    MatBoks2.setFill("#D9D9D9")
+    MatBoks2.setSize(27)
+    MatBoks3 = Entry(Point(870, 903), 6)
+    MatBoks3.setFill("#D9D9D9")
+    MatBoks3.setSize(27)
     
-    def MaterialBoks(x, y):
-        MatBoks = Entry(Point(x, y), 6)
-        MatBoks.setFill("#D9D9D9")
-        MatBoks.setSize(27)
-        MatBoks.draw(win)
-    
-    
+    FarveBoks1 = Entry(Point(610, 989), 6)
+    FarveBoks1.setFill("#D9D9D9")
+    FarveBoks1.setSize(27)
+    FarveBoks1.draw(win)
+    FarveBoks2 = Entry(Point(740, 989), 6)
+    FarveBoks2.setFill("#D9D9D9")
+    FarveBoks2.setSize(27)
+    FarveBoks3 = Entry(Point(870, 989), 6)
+    FarveBoks3.setFill("#D9D9D9")
+    FarveBoks3.setSize(27)
+
     MatButton = [720, 903]
     FarvButton = [720, 989]
-    
+    GemButton = [1560, 989]
     
     # Tegnelser for alle elementer
     SideBar()
     InfoBackground()
     InfoBoks()
-    InsertBoks()
     AddButton(MatButton[0], MatButton[1])
     AddButton(FarvButton[0], FarvButton[1])
-    MaterialBoks(MatButton[0]-110, MatButton[1])
-    MaterialBoks(FarvButton[0]-110, FarvButton[1])
+    AddButton(GemButton[0], GemButton[1])
 
     # Logik for knapper
-    temp1 = 0
-    temp2 = 0
-    while temp1 < 3 and temp2 < 3:    
+    temp1 = 1
+    temp2 = 1
+    while temp1 < 3 or temp2 < 3:    
         clickPoint = win.checkMouse()
         if clickPoint is None:
             pass
         elif inside(clickPoint, Rectangle(Point(MatButton[0]-22, MatButton[1]-22), Point(MatButton[0]+22, MatButton[1]+22)).draw(win)):
+            temp1 +=1
             MatButton[0] += 130
             AddButton(MatButton[0], MatButton[1])
-            MaterialBoks(MatButton[0]-110, MatButton[1])
-            temp1 +=1
+            if temp1 == 2:
+                MatBoks2.draw(win)
+            elif temp1 == 3:
+                MatBoks3.draw(win)
+            
         elif inside(clickPoint, Rectangle(Point(FarvButton[0]-22, FarvButton[1]-22), Point(FarvButton[0]+22, FarvButton[1]+22)).draw(win)):
+            temp2 +=1
             FarvButton[0] += 130
             AddButton(FarvButton[0], FarvButton[1])
-            MaterialBoks(FarvButton[0]-110, FarvButton[1])
-            temp2 +=1
+            if temp2 == 2:
+                FarveBoks2.draw(win)
+            elif temp2 == 3:
+                FarveBoks3.draw(win)
+        
+        elif inside(clickPoint, Rectangle(Point(GemButton[0]-22, GemButton[1]-22), Point(GemButton[0]+22, GemButton[1]+22)).draw(win)):
+            AlleInfo = [ProduktNavn, Stadie, Varenummer, Masse, Kategori, Enheder]
+            DataFile = open("Data.txt", "w")
+            for x in AlleInfo:
+                DataFile.write(x.getText() + ";")
+            DataFile.close()
+        
+
+            
     win.getMouse() # Pause to view result
     print(win.getMouse(), win.checkMouse())
     win.close()    # Close window when done
