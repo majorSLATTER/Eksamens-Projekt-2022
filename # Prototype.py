@@ -1,7 +1,9 @@
 from graphics import *
 
 windowSize = [1920, 1080]
-
+PathData = R"C:\Users\sunes\Desktop\Eksemprojekt\Data.txt"
+ImageData = R"C:\Users\sunes\Desktop\Eksemprojekt\test.png"
+InstanceData = 2
 # Tyv-stjålet kode fra stackoverflow der gør det muligt at justere tekst
 def setJustify(self, option):
     if not option in ["left", "center", "right"]:
@@ -33,6 +35,10 @@ def main():
             x.setOutline("#E4E4E4")
             x.draw(win)
     
+    def Billede():
+        imagePlace = Image(Point(1550, 500), ImageData)
+        imagePlace.draw(win)
+
     def InfoBoks():
         PBGRect1 = Rectangle(Point(200, 250), Point(1180, 1030))
         PBGRect2 = Rectangle(Point(175, 275), Point(1205, 1005))
@@ -64,7 +70,7 @@ def main():
         # Info tekst eg: stadie mm.
         InfoX = 375
         InfoY = 775
-        InfoText = open("Info.txt", "r")
+        InfoText = open("C:\\Users\\sunes\\Desktop\\Eksemprojekt\\Info.txt", "r")
         fullInfo = ""
         for line in InfoText:
             fullInfo += line + "\n"
@@ -86,106 +92,127 @@ def main():
 
         return ul.getX() < point.getX() < lr.getX() and ul.getY() < point.getY() < lr.getY()
     
-    def AddButton(x, y):
+    #def AddButton(x, y):
         r = Rectangle(Point(x-22, y-22), Point(x+21, y+21)).draw(win)
         Line(Point(x+18, y), Point(x-19, y)).draw(win)
         Line(Point(x, y+18), Point(x, y-19)).draw(win)
+    
 
-    o = open("Data.txt", "r")
-    PreBuildInfo = o.read().split(";")
-    o.close()
 
-    y=0
-    Stadie = Entry(Point(850, InsertY), 30)
-    Varenummer = Entry(Point(850, InsertY + 86), 30)
+    
+    Varenummer = Entry(Point(850, InsertY), 30)
+    Stadie = Entry(Point(850, InsertY + 86), 30)
     Masse = Entry(Point(850, InsertY + 86*2), 30)
     Kategori = Entry(Point(850, InsertY+ 86*3), 30)
     Enheder = Entry(Point(850, InsertY+ 86*4), 30)
-    SamletInfo = [Stadie, Varenummer, Masse, Kategori, Enheder]
-    for x in SamletInfo:
-        y += 1
-        x.setText(PreBuildInfo[y])
-        x.setFill("#D9D9D9")
-        x.setSize(27)
-        x.draw(win)
-
-
+    Materiale = Entry(Point(850, InsertY+ 86*5), 30)
+    Farve = Entry(Point(850, InsertY+ 86*6), 30)
     ProduktNavn = Entry(Point(650, 150), 30)
-    ProduktNavn.setText(PreBuildInfo[0])
-    ProduktNavn.setFill("#E4E4E4")
-    ProduktNavn.setSize(36)
-    ProduktNavn.draw(win)
+    SamletInfo = [Varenummer, Stadie, Masse, Kategori, Enheder, Materiale, Farve, ProduktNavn]
 
-    MatBoks1 = Entry(Point(610, 903), 6)
-    MatBoks1.setFill("#D9D9D9")
-    MatBoks1.setSize(27)
-    MatBoks1.draw(win)
-    MatBoks2 = Entry(Point(740, 903), 6)
-    MatBoks2.setFill("#D9D9D9")
-    MatBoks2.setSize(27)
-    MatBoks3 = Entry(Point(870, 903), 6)
-    MatBoks3.setFill("#D9D9D9")
-    MatBoks3.setSize(27)
     
-    FarveBoks1 = Entry(Point(610, 989), 6)
-    FarveBoks1.setFill("#D9D9D9")
-    FarveBoks1.setSize(27)
-    FarveBoks1.draw(win)
-    FarveBoks2 = Entry(Point(740, 989), 6)
-    FarveBoks2.setFill("#D9D9D9")
-    FarveBoks2.setSize(27)
-    FarveBoks3 = Entry(Point(870, 989), 6)
-    FarveBoks3.setFill("#D9D9D9")
-    FarveBoks3.setSize(27)
+    def InsertInfo():
+        global InstanceData, PathData
+        try:
+            o = open(PathData)
+        except:
+            o = open(PathData, "x")
+            o.close()
+            o = open(PathData)
+        PreBuiltText = o.readlines()
+        try:
+            PreBuildInfo = PreBuiltText[InstanceData-1].split(";")
+            PreBuildInfo.pop(-1)
+        except:
+            PreBuildInfo = []
+        
+        o.close()
 
-    MatButton = [720, 903]
-    FarvButton = [720, 989]
+        y = 0
+        try:
+            for x in SamletInfo:
+                x.setText(PreBuildInfo[y])
+                y += 1
+                x.setFill("#D9D9D9")
+                x.setSize(27)
+                x.undraw()
+                x.draw(win)
+        except:
+            for x in SamletInfo:
+                x.setText("")
+                y += 1
+                x.setFill("#D9D9D9")
+                x.setSize(27)
+                x.undraw()
+                x.draw(win)
+        ProduktNavn.undraw()
+        ProduktNavn.setFill("#E4E4E4")
+        ProduktNavn.setSize(36)
+        ProduktNavn.draw(win)
+
+        
+
     GemButton = [1560, 989]
+    NPButton = [50, 50]
     
+    NytProduktKnap = Rectangle(Point(NPButton[0]-40, NPButton[1]-40), Point(NPButton[0]+40, NPButton[1]+40))
+    NytProduktKnap.setFill("#5F85A9")
+    NytProduktTXT = Text(NytProduktKnap.getCenter(),"Nyt\nProdukt")
+
+    GemKnap = Rectangle(Point(GemButton[0]-50, GemButton[1]-22), Point(GemButton[0]+50, GemButton[1]+22))
+    
+    GemKnapTXT = Text(Point(GemButton[0], GemButton[1]), "Gem")
+    def NytProdukt():
+        global PathData, InstanceData, clickPoint
+        NytWin = GraphWin("Nyt Produkt", 400, 250)
+        Text(Point(100,80), "Indsæt path til data:").draw(NytWin)
+        Text(Point(100,170), "Indsæt linjenummer:").draw(NytWin)
+        Path = Entry(Point(300, 80), 20).draw(NytWin)
+        Instance = Entry(Point(300, 170), 20).draw(NytWin)
+        
+        GemKnap = Rectangle(Point(150, 210), Point(250, 240))
+        Text(GemKnap.getCenter(),"Gem").draw(NytWin)
+        GemKnap.draw(NytWin)
+        while not NytWin.isClosed():
+            clickPoint = NytWin.checkMouse()
+            if clickPoint is None:
+                pass   
+            elif inside(clickPoint, GemKnap):
+                print("Dutrykker")
+                PathData = Path.getText().replace("\"", "")
+                InstanceData = int(Instance.getText())
+                InsertInfo()
+                NytWin.close()
+
     # Tegnelser for alle elementer
     SideBar()
     InfoBackground()
     InfoBoks()
-    AddButton(MatButton[0], MatButton[1])
-    AddButton(FarvButton[0], FarvButton[1])
-    AddButton(GemButton[0], GemButton[1])
-
+    GemKnap.draw(win)
+    GemKnapTXT.draw(win)
+    InsertInfo()
+    Billede()
+    NytProduktKnap.draw(win)
+    NytProduktTXT.draw(win)
     # Logik for knapper
-    temp1 = 1
-    temp2 = 1
-    while temp1 < 3 or temp2 < 3:    
+    while not win.isClosed():
         clickPoint = win.checkMouse()
         if clickPoint is None:
-            pass
-        elif inside(clickPoint, Rectangle(Point(MatButton[0]-22, MatButton[1]-22), Point(MatButton[0]+22, MatButton[1]+22)).draw(win)):
-            temp1 +=1
-            MatButton[0] += 130
-            AddButton(MatButton[0], MatButton[1])
-            if temp1 == 2:
-                MatBoks2.draw(win)
-            elif temp1 == 3:
-                MatBoks3.draw(win)
-            
-        elif inside(clickPoint, Rectangle(Point(FarvButton[0]-22, FarvButton[1]-22), Point(FarvButton[0]+22, FarvButton[1]+22)).draw(win)):
-            temp2 +=1
-            FarvButton[0] += 130
-            AddButton(FarvButton[0], FarvButton[1])
-            if temp2 == 2:
-                FarveBoks2.draw(win)
-            elif temp2 == 3:
-                FarveBoks3.draw(win)
-        
-        elif inside(clickPoint, Rectangle(Point(GemButton[0]-22, GemButton[1]-22), Point(GemButton[0]+22, GemButton[1]+22)).draw(win)):
-            AlleInfo = [ProduktNavn, Stadie, Varenummer, Masse, Kategori, Enheder]
-            DataFile = open("Data.txt", "w")
+            pass      
+        elif inside(clickPoint, Rectangle(Point(GemButton[0]-50, GemButton[1]-22), Point(GemButton[0]+50, GemButton[1]+22)).draw(win)):
+            AlleInfo = [Varenummer, Stadie, Masse, Kategori, Enheder, Materiale, Farve, ProduktNavn]
+            DataFile = open("C:\\Users\\sunes\\Desktop\\Eksemprojekt\\Data.txt", "a")
+            DataFile.write("\n")
             for x in AlleInfo:
                 DataFile.write(x.getText() + ";")
             DataFile.close()
-        
+        elif inside(clickPoint, Rectangle(Point(NPButton[0]-40, NPButton[1]-40), Point(NPButton[0]+40, NPButton[1]+40))):
+            NytProdukt()
+
 
             
     win.getMouse() # Pause to view result
-    print(win.getMouse(), win.checkMouse())
+    print(win.getMouse(), win.checkKey())
     win.close()    # Close window when done
 main()
 
