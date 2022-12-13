@@ -1,16 +1,31 @@
 from graphics import *
 
+# Vinduets størrelse. 
 windowSize = [1920, 1080]
-PathData = R"C:\Users\sunes\Desktop\Eksemprojekt\Data.txt"
-ImageData = R"C:\Users\sunes\Desktop\Eksemprojekt\test.png"
+
+# Variable for standard data dokumenter
+PathData = R"Data.txt"
+ImageData = R"test.png"
+InfoData = R"Info.txt"
 InstanceData = 2
-# Tyv-stjålet kode fra stackoverflow der gør det muligt at justere tekst
+
+# Funktion der kan justere tekst i graphics
 def setJustify(self, option):
     if not option in ["left", "center", "right"]:
         raise GraphicsError(BAD_OPTION)
     self._reconfig("justify", option)
 
+# Funktion til at tjekke om der er trykket inde i en rektangel
+def inside(point, rect):
+    ul = rect.getP1() # finder punktet for ul (upper left)
+    lr = rect.getP2() # finder punktet for lr (lower right)
+
+    return ul.getX() < point.getX() < lr.getX() and ul.getY() < point.getY() < lr.getY()
+
+# Main loop
 def main():
+    
+    # Vinduet der bliver skabt
     win = GraphWin ("PIM", windowSize[0], windowSize[1])
     
     # Main interface
@@ -21,7 +36,6 @@ def main():
         SideBar.draw(win)
     
     # Baggrund og infoboks er lavet af 2 rectangels med 2 cirkler i der kanter for at få en rund kant
-    
     def InfoBackground():
         PBGRect1 = Rectangle(Point(150, 50), Point(1870, 1030))
         PBGRect2 = Rectangle(Point(175, 25), Point(1845, 1055))
@@ -34,10 +48,6 @@ def main():
             x.setFill("#E4E4E4")
             x.setOutline("#E4E4E4")
             x.draw(win)
-    
-    def Billede():
-        imagePlace = Image(Point(1550, 500), ImageData)
-        imagePlace.draw(win)
 
     def InfoBoks():
         PBGRect1 = Rectangle(Point(200, 250), Point(1180, 1030))
@@ -52,6 +62,7 @@ def main():
             x.setOutline("#F2F2F2")
             x.draw(win)
         Line(Point(200, 335), Point(1180, 335)).draw(win)
+           
         # Header linje "Information"
         Headline = Text(Point(485, 310), "Information om produkt")
         Headline.setSize(35)
@@ -70,7 +81,7 @@ def main():
         # Info tekst eg: stadie mm.
         InfoX = 375
         InfoY = 775
-        InfoText = open("C:\\Users\\sunes\\Desktop\\Eksemprojekt\\Info.txt", "r")
+        InfoText = open(InfoData, "r")
         fullInfo = ""
         for line in InfoText:
             fullInfo += line + "\n"
@@ -82,24 +93,17 @@ def main():
         r.draw(win)
         InfoText.close()
     
+    # Billedet af produktet
+    # Ikke brugerdefineret
+    def Billede():
+        imagePlace = Image(Point(1550, 500), ImageData)
+        imagePlace.draw(win)
+
     # De kasser med entries
-    InsertY = 473
-    
-    # Funktion til at tjekke om der er trykket inde i en rektangel
-    def inside(point, rect):
-        ul = rect.getP1() # finder punktet for ul (upper left)
-        lr = rect.getP2() # finder punktet for lr (lower right)
+    InsertY = 473 # InsertY er blot en standard Y værdi for alle entry kasserne
 
-        return ul.getX() < point.getX() < lr.getX() and ul.getY() < point.getY() < lr.getY()
-    
-    #def AddButton(x, y):
-        r = Rectangle(Point(x-22, y-22), Point(x+21, y+21)).draw(win)
-        Line(Point(x+18, y), Point(x-19, y)).draw(win)
-        Line(Point(x, y+18), Point(x, y-19)).draw(win)
-    
-
-
-    
+    # Alle entry kasser
+    # En alternativ måde at lave dem kunne være med en class
     Varenummer = Entry(Point(850, InsertY), 30)
     Stadie = Entry(Point(850, InsertY + 86), 30)
     Masse = Entry(Point(850, InsertY + 86*2), 30)
@@ -108,11 +112,15 @@ def main():
     Materiale = Entry(Point(850, InsertY+ 86*5), 30)
     Farve = Entry(Point(850, InsertY+ 86*6), 30)
     ProduktNavn = Entry(Point(650, 150), 30)
+    
+    # En måde at samle alle værdier fra entry kasserne i en liste
     SamletInfo = [Varenummer, Stadie, Masse, Kategori, Enheder, Materiale, Farve, ProduktNavn]
 
-    
+    # Funktion der tegner entry kasserne og indsætter data i dem 
     def InsertInfo():
         global InstanceData, PathData
+        
+        # Dette stykke åbner data filen, læser de givne data og indsætter dem i listen PredBuildInfo
         try:
             o = open(PathData)
         except:
@@ -128,6 +136,7 @@ def main():
         
         o.close()
 
+        # Dette stykke indsætter dataen i entry kasserne og tegner dem i vinduet
         y = 0
         try:
             for x in SamletInfo:
@@ -145,23 +154,29 @@ def main():
                 x.setSize(27)
                 x.undraw()
                 x.draw(win)
+        
+        # Selve produkt navnet er anderledes fra de andre entry kasser, derfor bliver den gen-tegnet med sine egne specifikationer
         ProduktNavn.undraw()
         ProduktNavn.setFill("#E4E4E4")
         ProduktNavn.setSize(36)
         ProduktNavn.draw(win)
 
         
-
+    # Koordinater for gem knappen og nyt produkt knappen
     GemButton = [1560, 989]
     NPButton = [50, 50]
     
+    # Specifikationer for nyt produkt knap
     NytProduktKnap = Rectangle(Point(NPButton[0]-40, NPButton[1]-40), Point(NPButton[0]+40, NPButton[1]+40))
     NytProduktKnap.setFill("#5F85A9")
     NytProduktTXT = Text(NytProduktKnap.getCenter(),"Nyt\nProdukt")
 
+    # Specifikation for gem knap
+    # Denne kunne godt have mere design til sig
     GemKnap = Rectangle(Point(GemButton[0]-50, GemButton[1]-22), Point(GemButton[0]+50, GemButton[1]+22))
-    
     GemKnapTXT = Text(Point(GemButton[0], GemButton[1]), "Gem")
+
+    # Funktion til at loade ny data, ved indsætning af path til data fil og hvilken instance det skal være
     def NytProdukt():
         global PathData, InstanceData, clickPoint
         NytWin = GraphWin("Nyt Produkt", 400, 250)
@@ -173,12 +188,13 @@ def main():
         GemKnap = Rectangle(Point(150, 210), Point(250, 240))
         Text(GemKnap.getCenter(),"Gem").draw(NytWin)
         GemKnap.draw(NytWin)
+        
+        # Logik til hvis man trykker på gem knappen
         while not NytWin.isClosed():
             clickPoint = NytWin.checkMouse()
             if clickPoint is None:
                 pass   
             elif inside(clickPoint, GemKnap):
-                print("Dutrykker")
                 PathData = Path.getText().replace("\"", "")
                 InstanceData = int(Instance.getText())
                 InsertInfo()
@@ -194,14 +210,15 @@ def main():
     Billede()
     NytProduktKnap.draw(win)
     NytProduktTXT.draw(win)
-    # Logik for knapper
+    
+    # Logik for knapper på vinduet
     while not win.isClosed():
         clickPoint = win.checkMouse()
         if clickPoint is None:
             pass      
         elif inside(clickPoint, Rectangle(Point(GemButton[0]-50, GemButton[1]-22), Point(GemButton[0]+50, GemButton[1]+22)).draw(win)):
             AlleInfo = [Varenummer, Stadie, Masse, Kategori, Enheder, Materiale, Farve, ProduktNavn]
-            DataFile = open("C:\\Users\\sunes\\Desktop\\Eksemprojekt\\Data.txt", "a")
+            DataFile = open(PathData, "a")
             DataFile.write("\n")
             for x in AlleInfo:
                 DataFile.write(x.getText() + ";")
