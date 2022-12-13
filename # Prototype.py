@@ -7,7 +7,7 @@ windowSize = [1920, 1080]
 PathData = R"Data.txt"
 ImageData = R"test.png"
 InfoData = R"Info.txt"
-InstanceData = 2
+InstanceData = 1
 
 # Funktion der kan justere tekst i graphics
 def setJustify(self, option):
